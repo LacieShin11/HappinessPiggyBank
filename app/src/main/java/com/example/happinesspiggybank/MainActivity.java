@@ -9,7 +9,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
-    private Button shopBtn, creationBtn;
+    private Button shopBtn, creationBtn, bankBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
         shopBtn = (Button) findViewById(R.id.shop);
         creationBtn = (Button) findViewById(R.id.creat_happiness);
+        bankBtn = (Button) findViewById(R.id.piggy_bank);
 
         shopBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -33,6 +34,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent createIntent = new Intent(getApplicationContext(), CreateActivity.class);
                 startActivity(createIntent);
+            }
+        });
+
+        bankBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent bankIntent = new Intent(getApplicationContext(), BankActivity.class);
+                startActivity(bankIntent);
             }
         });
     }
