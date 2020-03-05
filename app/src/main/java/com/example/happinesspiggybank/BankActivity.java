@@ -1,21 +1,21 @@
 package com.example.happinesspiggybank;
 
 
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.widget.BaseAdapter;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.Toast;
 
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import static com.example.happinesspiggybank.HappyDbManager.TABLE_Happy;
 
 import java.util.ArrayList;
 
 public class BankActivity extends AppCompatActivity {
     HappyDbManager dbManager;
+    ArrayList<HappyList> happyDataList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,11 +24,22 @@ public class BankActivity extends AppCompatActivity {
 
         dbManager = HappyDbManager.getInstance(this);
 
+        this.getHappyData();
 
+        ListView listView = (ListView)findViewById(R.id.happyList);
+        final BankListAdapter myAdapter = new BankListAdapter(this, happyDataList);
+
+        listView.setAdapter(myAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Toast.makeText(getApplicationContext(), myAdapter.getItem(position).getDate(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
-    /*
     public void getHappyData() {
-        happyList = new ArrayList<>();
+        happyDataList = new ArrayList<>();
 
         String[] columns = new String[] {"_id", "date", "time", "content"};
 
@@ -36,23 +47,20 @@ public class BankActivity extends AppCompatActivity {
 
         if(cursor != null) {
             while (cursor.moveToNext()) {
-                happyItem currentData = new happyItem();
+                HappyList currentData = new HappyList();
 
                 currentData.setId(cursor.getInt(0));
                 currentData.setDate(cursor.getString(1));
                 currentData.setTime(cursor.getString(2));
                 currentData.setContent(cursor.getString(3));
 
-                happyList.add(currentData);
+                happyDataList.add(currentData);
             }
         }
-    }*/
-}
-/*
-public class BankListAdapter extends BaseAdapter {
-    Context mContext= null;
-    LayoutInflater mLayoutInflater = null;
-    ArrayList<happyList>
+    }
+
 }
 
- */
+
+
+

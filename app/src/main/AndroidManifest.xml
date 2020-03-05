@@ -22,6 +22,9 @@
         <activity android:name=".CreateActivity"
             android:label="작성"
             android:parentActivityName=".MainActivity" />
+        <activity android:name=".BankActivity"
+            android:label="저금통"
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>
