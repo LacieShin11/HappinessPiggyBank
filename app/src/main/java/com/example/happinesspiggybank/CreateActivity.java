@@ -23,7 +23,7 @@ import static com.example.happinesspiggybank.HappyDbManager.TABLE_Happy;
 public class CreateActivity extends AppCompatActivity {
     int year, month, day, hour, minute;
     Button btnDate, btnTime, btnCan, btnSave, btnHelp;
-    EditText content;
+    EditText editContent;
 
 
     @Override
@@ -38,7 +38,7 @@ public class CreateActivity extends AppCompatActivity {
         btnTime = (Button) findViewById((R.id.time));
         btnCan = (Button) findViewById(R.id.cancel);
         btnSave = (Button) findViewById(R.id.save);
-        content = (EditText) findViewById(R.id.content);
+        editContent = (EditText) findViewById(R.id.content);
 
         Calendar cal = new GregorianCalendar();
         year = cal.get(Calendar.YEAR);
@@ -63,7 +63,7 @@ public class CreateActivity extends AppCompatActivity {
 
                 addRowValue.put("date", btnDate.getText().toString());
                 addRowValue.put("time", btnTime.getText().toString());
-                addRowValue.put("content", content.getText().toString());
+                addRowValue.put("content", editContent.getText().toString());
 
                 dbManager.insert(addRowValue);
 
@@ -73,6 +73,7 @@ public class CreateActivity extends AppCompatActivity {
         });
     }
 
+    //btnDate, btnTime 클릭 이벤트
     public void mOnClick(View v) {
         switch(v.getId()) {
             case R.id.date:
@@ -108,7 +109,7 @@ public class CreateActivity extends AppCompatActivity {
                     UpdateNow();
                 }
             };
-
+    //날짜와 시간 업데이트
     void UpdateNow() {
         btnDate.setText(String.format("%d. %d. %d", year, month+1, day));
         btnTime.setText(String.format("%d : %d", hour, minute));

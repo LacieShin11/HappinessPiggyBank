@@ -41,4 +41,12 @@ public class HappyDbManager {
     public Cursor query(String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderby) {
         return mydatabase.query(TABLE_Happy, columns, selection, selectionArgs, groupBy, having, orderby);
     }
+
+    //레코드 개수 반환
+    public int getCntQuery() {
+        int cnt = 0;
+        Cursor cursor = mydatabase.rawQuery("select * from " + TABLE_Happy, null);
+        cnt = cursor.getCount();
+        return cnt;
+    }
 }

@@ -1,17 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/count"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="bank" />
+        android:layout_height="60dp"
+        android:text="총 0개의 행복"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:textAlignment="center"
+        android:textSize="30dp"
+        android:bufferType="spannable"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="5dp"
+        android:gravity="bottom"/>
 
-    <ListView
-        android:id="@+id/happyList"
+    <Button
+        android:id="@+id/help1"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:text="help"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="5dp"/>
+
+    <Button
+        android:id="@+id/cancel"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:text="X" />
+
+    <Button
+        android:id="@+id/randomPlay"
+        android:layout_width="68dp"
+        android:layout_height="35dp"
+        android:text="랜덤재생"
+        android:textSize="12dp"
+        android:layout_below="@+id/cancel"
+        android:layout_alignParentRight="true" />
+
+    <ImageView
+        android:id="@+id/dashLine"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="2dp"
+        android:layout_below="@id/count"
+        android:layerType="software"
+        android:src="@drawable/dash_line" />
 
-</LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="5"
+        android:layout_below="@id/dashLine">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+        <ListView
+            android:id="@+id/happyList"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:layout_below="@+id/cancel"/>
+    </LinearLayout>
+</RelativeLayout>

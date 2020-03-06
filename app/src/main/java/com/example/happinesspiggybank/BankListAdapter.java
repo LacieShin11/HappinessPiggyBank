@@ -42,11 +42,9 @@ public class BankListAdapter extends BaseAdapter {
 
         TextView date = (TextView) view.findViewById(R.id.dateList);
         TextView time = (TextView) view.findViewById(R.id.timeList);
-        TextView cont = (TextView) view.findViewById(R.id.contList);
 
         date.setText(happySample.get(position).getDate());
         time.setText(happySample.get(position).getTime());
-        cont.setText(happySample.get(position).getCont());
 
         return view;
     }

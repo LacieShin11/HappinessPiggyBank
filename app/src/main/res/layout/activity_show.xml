@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <Button
         android:id="@+id/date"
@@ -39,7 +40,7 @@
         android:id="@+id/content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="새 행복을 적어주세요"
+        android:hint="클릭하여 수정"
         android:textSize="20dp"
         android:layout_below="@+id/dashLine"
         android:layout_marginTop="7dp"
@@ -65,13 +66,34 @@
     <Button
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:id="@+id/save"
+        android:id="@+id/delete"
         android:background="#00ff0000"
         android:stateListAnimator="@null"
-        android:text="+"
-        android:textSize="30dp"
+        android:text="delete"
+        android:textSize="10dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"/>
+
+    <Button
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:id="@+id/modify"
+        android:background="#00ff0000"
+        android:stateListAnimator="@null"
+        android:text="수정"
+        android:textSize="10dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"/>
 
+    <Button
+        android:layout_width="60dp"
+        android:layout_height="35dp"
+        android:id="@+id/capture"
+        android:background="#00ff0000"
+        android:stateListAnimator="@null"
+        android:text="capture"
+        android:textSize="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_above="@id/dashLine"/>
 
 </RelativeLayout>
