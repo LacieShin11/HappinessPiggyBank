@@ -43,6 +43,7 @@ public class BankActivity extends AppCompatActivity {
         ListView listView = (ListView)findViewById(R.id.happyList);
         final BankListAdapter myAdapter = new BankListAdapter(this, happyDataList);
 
+        myAdapter.notifyDataSetChanged();
         listView.setAdapter(myAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -51,6 +52,10 @@ public class BankActivity extends AppCompatActivity {
                 //Toast.makeText(getApplicationContext(), myAdapter.getItem(position).getDate(), Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getApplicationContext(), ShowActivity.class);
 
+                int[] IDArray = dbManager.getID(); // DB 상의 id 가져오기
+
+                intent.putExtra("id", IDArray[position]);
+                //intent.putExtra("id", IDArray[(int) myAdapter.getItemId(position)]);
                 intent.putExtra("date", myAdapter.getItem(position).getDate());
                 intent.putExtra("time", myAdapter.getItem(position).getTime());
                 intent.putExtra("content", myAdapter.getItem(position).getCont());
@@ -66,6 +71,7 @@ public class BankActivity extends AppCompatActivity {
             }
         } );
     }
+
     public void getHappyData() {
         happyDataList = new ArrayList<>();
 
