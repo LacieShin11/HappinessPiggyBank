@@ -6,6 +6,7 @@ import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -15,6 +16,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.sql.Date;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -61,8 +65,8 @@ public class CreateActivity extends AppCompatActivity {
             public void onClick(View view) {
                 ContentValues addRowValue = new ContentValues();
 
-                addRowValue.put("date", btnDate.getText().toString());
-                addRowValue.put("time", btnTime.getText().toString());
+                addRowValue.put("date", Integer.valueOf(btnDate.getText().toString().replace(". ", "")));
+                addRowValue.put("time", Integer.valueOf(btnTime.getText().toString().replace(" : ", "")));
                 addRowValue.put("content", editContent.getText().toString());
 
                 dbManager.insert(addRowValue);
@@ -81,7 +85,7 @@ public class CreateActivity extends AppCompatActivity {
                 break;
 
             case R.id.time:
-                new TimePickerDialog(CreateActivity.this, timeSetListener, hour, minute, false).show();
+                new TimePickerDialog(CreateActivity.this, timeSetListener, hour, minute, true).show();
                 break;
         }
     }
@@ -104,15 +108,30 @@ public class CreateActivity extends AppCompatActivity {
                 @Override
                 public void onTimeSet(TimePicker view, int h, int min) {
                     hour = h;
+                    System.out.println(h);
                     minute = min;
 
                     UpdateNow();
                 }
             };
+
     //날짜와 시간 업데이트
     void UpdateNow() {
+        // 날짜별 정렬을 위해 날짜 포맷을 yyyy. MM. dd로 변경
+        int adjustedMonth = month + 1;
+        String date = year + "-" + adjustedMonth + "-" + day;
+        Date d = Date.valueOf(date);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy. MM. dd");
+        btnDate.setText(dateFormat.format(d));
+
+        // 시간별 정렬을 위해 시간 포맷을 hh : mm으로 변경
+        String time = hour + ":" + minute + ":00";
+        Time t = Time.valueOf(time);
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH : mm");
+        btnTime.setText(timeFormat.format(t));
+/*      이전 코드
         btnDate.setText(String.format("%d. %d. %d", year, month+1, day));
-        btnTime.setText(String.format("%d : %d", hour, minute));
+        btnTime.setText(String.format("%d : %d", hour, minute));*/
     }
 
     @Override

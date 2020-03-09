@@ -9,6 +9,7 @@ import android.text.Spannable;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -84,8 +85,18 @@ public class BankActivity extends AppCompatActivity {
                 HappyList currentData = new HappyList();
 
                 currentData.setId(cursor.getInt(0));
-                currentData.setDate(cursor.getString(1));
-                currentData.setTime(cursor.getString(2));
+                String tempDate = cursor.getString(1);
+                currentData.setDate(tempDate.substring(0, 4) + ". " + tempDate.substring(4, 6) + ". " + tempDate.substring(tempDate.length() - 2, tempDate.length()));
+                Log.i("date is ", currentData.getDate());
+
+                String tempTime = cursor.getString(2);
+                if (tempTime.length() > 3) {
+                    currentData.setTime(tempTime.substring(0, 2) + " : " + tempTime.substring(tempTime.length() - 2, tempTime.length()));
+                } else {
+                    currentData.setTime("0" + tempTime.substring(0, 1) + " : " + tempTime.substring(tempTime.length() - 2, tempTime.length()));
+                }
+                //currentData.setTime(cursor.getString(2).substring(0, 2) + " : " + cursor.getString(2).substring(tempTime.length() - 2, tempTime.length()));
+                Log.i("time is ", currentData.getTime());
                 currentData.setContent(cursor.getString(3));
 
                 happyDataList.add(currentData);

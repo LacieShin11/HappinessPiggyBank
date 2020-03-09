@@ -35,7 +35,7 @@ public class HappyDbManager {
         mydatabase = context.openOrCreateDatabase(DB_Happy, context.MODE_PRIVATE, null);
 
         //Table 생성
-        mydatabase.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_Happy + "(" + "_id INTEGER PRIMARY KEY AUTOINCREMENT," + "date TEXT, time TEXT, content TEXT);");
+        mydatabase.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_Happy + "(" + "_id INTEGER PRIMARY KEY AUTOINCREMENT," + "date INTEGER, time INTEGER, content TEXT);");
     }
 
     //내용 추가
@@ -51,7 +51,7 @@ public class HappyDbManager {
     }
 
     // 내용 업데이트
-    public long update(int update_id, String date, String time, String content) {
+    public long update(int update_id, Integer date, Integer time, String content) {
         Cursor c = mydatabase.rawQuery("select * from " + TABLE_Happy + " where " + TABLE_Happy + "." + ID + "= '" + update_id + "';", null);
 
         Log.i("", "update success");

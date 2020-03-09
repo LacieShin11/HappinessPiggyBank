@@ -27,6 +27,8 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -68,7 +70,7 @@ public class ShowActivity extends AppCompatActivity {
         editContent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((EditText)view).setInputType(EditorInfo.TYPE_CLASS_TEXT);
+                ((EditText) view).setInputType(EditorInfo.TYPE_CLASS_TEXT);
             }
         });
 
@@ -89,23 +91,19 @@ public class ShowActivity extends AppCompatActivity {
                 bankActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(bankActivityIntent);
             }
-        } );
+        });
 
         // 스크린 캡처하기
         btnCapture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // 외부 저장소에 쓰기 권한이 있는지 검사
-                if (ContextCompat.checkSelfPermission(getApplication(),
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(ShowActivity.this,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    } else { // 외부 저장소 쓰기 권한 요청
-                        ActivityCompat.requestPermissions(ShowActivity.this,
-                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-                    }
+                if (ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    // 권한이 없는 경우 권한 선택할 수 있는 다이얼로그 생성
+                    ActivityCompat.requestPermissions(ShowActivity.this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
                 } else {
+                    // 권한이 있는 경우
                     takeScreenCapture();
                 }
             }
@@ -127,15 +125,15 @@ public class ShowActivity extends AppCompatActivity {
         btnModify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                date = btnDate.getText().toString();
-                time = btnTime.getText().toString();
+                date = btnDate.getText().toString().replace(". ", "");
+                time = btnTime.getText().toString().replace(" : ", "");
                 cont = editContent.getText().toString();
 
                 Log.i("date : ", date);
                 Log.i("time : ", time);
                 Log.i("cont : ", cont);
 
-                dbManager.update(id, date, time, cont);
+                dbManager.update(id, Integer.valueOf(date), Integer.valueOf(time), cont);
 
                 editContent.clearFocus();
             }
@@ -145,11 +143,30 @@ public class ShowActivity extends AppCompatActivity {
         time = dbManager.getTimeItem(id);
         cont = dbManager.getContentItem(id);
 
-        btnDate.setText(date);
-        btnTime.setText(time);
+        String convertedDate = date.substring(0, 4) + ". " + date.substring(4, 6) + ". " + date.substring(6, date.length());
+        String convertedTime;
+        if (time.length() > 3)
+            convertedTime = time.substring(0, 2) + " : " + time.substring(time.length() - 2, time.length());
+        else
+            convertedTime = "0" + time.substring(0, 1) + " : " + time.substring(time.length() - 2, time.length());
+
+
+        btnDate.setText(convertedDate);
+        btnTime.setText(convertedTime);
         editContent.setText(cont);
 
         //저장된 날짜와 시간 저장
+        year = Integer.parseInt(date.substring(0, 4));
+        month = Integer.parseInt(date.substring(4, 6));
+        day = Integer.parseInt(date.substring(6, date.length()));
+
+        if (time.length() > 3)
+            hour = Integer.parseInt(time.substring(0, 2));
+        else
+            hour = Integer.parseInt(time.substring(0, 1));
+        minute = Integer.parseInt(time.substring(time.length() - 2, time.length()));
+
+/*      예전 코드
         String[] arrDate = date.split(". ");
         year = Integer.parseInt(arrDate[0]);
         month = Integer.parseInt(arrDate[1]);
@@ -157,7 +174,7 @@ public class ShowActivity extends AppCompatActivity {
 
         String[] arrTime = time.split(" : ");
         hour = Integer.parseInt(arrTime[0]);
-        minute = Integer.parseInt(arrTime[1]);
+        minute = Integer.parseInt(arrTime[1]);*/
     }
 
     @Override
@@ -171,7 +188,7 @@ public class ShowActivity extends AppCompatActivity {
     }
 
     public void mOnClick(View v) {
-        switch(v.getId()) {
+        switch (v.getId()) {
             case R.id.date:
                 new DatePickerDialog(ShowActivity.this, dateSetListener, year, month, day).show();
                 break;
@@ -208,10 +225,21 @@ public class ShowActivity extends AppCompatActivity {
             };
 
     void UpdateDate() {
-        btnDate.setText(String.format("%d. %d. %d", year, month+1, day));
+        // 날짜별 정렬을 위해 날짜 포맷을 yyyy. MM. dd로 변경
+        int adjustedMonth = month + 1;
+        String date = year + "-" + adjustedMonth + "-" + day;
+        java.sql.Date d = java.sql.Date.valueOf(date);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy. MM. dd");
+        btnDate.setText(dateFormat.format(d));
+        //btnDate.setText(String.format("%d. %d. %d", year, month+1, day));
     }
+
     void UpdateTime() {
-        btnTime.setText(String.format("%d : %d", hour, minute));
+        String time = hour + ":" + minute + ":00";
+        Time t = Time.valueOf(time);
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH : mm");
+        btnTime.setText(timeFormat.format(t));
+        //btnTime.setText(String.format("%d : %d", hour, minute));
     }
 
     // 스크린 캡처
@@ -239,7 +267,7 @@ public class ShowActivity extends AppCompatActivity {
             captureView.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
 
             // 갤러리에 생성한 스크린 캡처 추가
-            if(imageFile != null){
+            if (imageFile != null) {
                 sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(imageFile)));
             }
 
@@ -262,7 +290,7 @@ public class ShowActivity extends AppCompatActivity {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Snackbar.make(findViewById(R.id.layout_show), "권한 승인", Snackbar.LENGTH_SHORT).show();
                 } else {
-                    Snackbar.make(findViewById(R.id.layout_show), "권한 거부(스크린 캡처 불가)", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.layout_show), "권한 거부(스크린 캡처 불가) / 다시 묻지 않음을 선택한 경우, 설정→앱 정보→해당 앱에서 권한을 허용해 주세요.", Snackbar.LENGTH_LONG).show();
                 }
                 return;
             }
