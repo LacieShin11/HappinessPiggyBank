@@ -20,12 +20,16 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 
 public class BankActivity extends AppCompatActivity {
     HappyDbManager dbManager;
     ArrayList<HappyList> happyDataList;
-    Button btnCan;
+    Button btnCan, randomButton;
     TextView txtCount;
 
     @Override
@@ -35,6 +39,7 @@ public class BankActivity extends AppCompatActivity {
 
         btnCan = (Button) findViewById(R.id.cancel);
         txtCount = (TextView) findViewById(R.id.count);
+        randomButton = (Button) findViewById(R.id.randomPlay);
 
         dbManager = HappyDbManager.getInstance(this);
 
@@ -69,6 +74,20 @@ public class BankActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 finish();
+            }
+        } );
+
+        //랜덤재생 버튼 클릭 이벤트
+        randomButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(dbManager.getCntQuery() <= 0) Snackbar.make(view, "하나 이상의 행복이 있어야 가능합니다.", Snackbar.LENGTH_SHORT).show();
+                else {
+                    Intent randomIntent = new Intent(getApplicationContext(), RandomShowActivity.class);
+                    randomIntent.putExtra("happyDataList", getShuffleList());
+
+                    startActivity(randomIntent);
+                }
             }
         } );
     }
@@ -115,6 +134,16 @@ public class BankActivity extends AppCompatActivity {
         span.setSpan(new RelativeSizeSpan(1.7f), 2, endIter, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
         span.setSpan(new ForegroundColorSpan(Color.parseColor("#ebc795")), 2, endIter, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
     }
+
+    public ArrayList<HappyList> getShuffleList() {
+        ArrayList<HappyList> happyShuffleList = happyDataList;
+
+        long seed = System.nanoTime();
+        Collections.shuffle(happyShuffleList, new Random(seed));
+
+        return happyShuffleList;
+    }
+
 }
 
 

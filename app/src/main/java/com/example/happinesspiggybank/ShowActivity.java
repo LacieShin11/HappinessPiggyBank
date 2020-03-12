@@ -166,15 +166,6 @@ public class ShowActivity extends AppCompatActivity {
             hour = Integer.parseInt(time.substring(0, 1));
         minute = Integer.parseInt(time.substring(time.length() - 2, time.length()));
 
-/*      예전 코드
-        String[] arrDate = date.split(". ");
-        year = Integer.parseInt(arrDate[0]);
-        month = Integer.parseInt(arrDate[1]);
-        day = Integer.parseInt(arrDate[2]);
-
-        String[] arrTime = time.split(" : ");
-        hour = Integer.parseInt(arrTime[0]);
-        minute = Integer.parseInt(arrTime[1]);*/
     }
 
     @Override

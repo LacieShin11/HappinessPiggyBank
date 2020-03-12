@@ -32,6 +32,9 @@
         <activity android:name=".ShowActivity"
             android:label="저금통-행복"
             android:parentActivityName=".BankActivity" />
+        <activity android:name=".RandomShowActivity"
+            android:label="저금통-행복"
+            android:parentActivityName=".BankActivity" />
     </application>
 
 </manifest>

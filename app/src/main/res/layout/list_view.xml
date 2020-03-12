@@ -9,7 +9,7 @@
         android:id="@+id/dateList"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:textSize="20dp"/>
+        android:textSize="25dp"/>
 
     <TextView
         android:id="@+id/timeList"
@@ -17,6 +17,6 @@
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
         android:layout_marginRight="20dp"
-        android:textSize="20dp"/>
+        android:textSize="25dp"/>
 
 </RelativeLayout>

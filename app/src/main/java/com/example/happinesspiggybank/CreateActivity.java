@@ -11,10 +11,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.sql.Date;
 import java.sql.Time;
@@ -28,7 +31,6 @@ public class CreateActivity extends AppCompatActivity {
     int year, month, day, hour, minute;
     Button btnDate, btnTime, btnCan, btnSave, btnHelp;
     EditText editContent;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +73,8 @@ public class CreateActivity extends AppCompatActivity {
 
                 dbManager.insert(addRowValue);
 
-                Toast.makeText(getApplicationContext(), "행복을 저장했습니다.", Toast.LENGTH_SHORT).show();
+                Snackbar.make(view, "행복을 저장했습니다.", Snackbar.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "행복을 저장했습니다.", Toast.LENGTH_SHORT).show();
                 CreateActivity.super.onBackPressed();
             }
         });
@@ -140,7 +143,7 @@ public class CreateActivity extends AppCompatActivity {
     }
 
     public void backPressed() {
-        Toast.makeText(this, "기록하는 것을 중지했습니다.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "기록하는 것을 중지했습니다.", Toast.LENGTH_SHORT).show();
         super.onBackPressed();
     }
 

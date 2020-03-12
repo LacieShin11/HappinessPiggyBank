@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textview_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date"
+        android:textSize="30dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginLeft="20dp"/>
+
+    <TextView
+        android:id="@+id/textview_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Time"
+        android:textSize="30dp"
+        android:layout_marginTop="60dp"
+        android:layout_toRightOf="@+id/textview_date"
+        android:layout_marginLeft="20dp" />
+
+    <ImageView
+        android:id="@+id/dashLine"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/textview_date"
+        android:layerType="software"
+        android:src="@drawable/dash_line" />
+
+    <TextView
+        android:id="@+id/textview_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="내용"
+        android:textSize="20dp"
+        android:layout_below="@+id/dashLine"
+        android:layout_marginTop="7dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp" />
+
+</RelativeLayout>

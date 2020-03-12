@@ -1,7 +1,9 @@
 package com.example.happinesspiggybank;
 
+import java.io.Serializable;
+
 //HappyList 클래스 정의
-public class HappyList {
+public class HappyList implements Serializable {
     private int id;
     private String date;
     private String time;
