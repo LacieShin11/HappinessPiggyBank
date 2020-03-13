@@ -1,18 +1,22 @@
 package com.example.happinesspiggybank;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -41,6 +45,7 @@ public class ShowActivity extends AppCompatActivity {
     EditText editContent;
     int year, month, day, hour, minute, id;
     String date, time, cont;
+    private HappyDbManager dbManager;
     private final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0;
 
     @Override
@@ -49,7 +54,7 @@ public class ShowActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_show);
 
-        final HappyDbManager dbManager = HappyDbManager.getInstance(this); // DB Open
+        dbManager = HappyDbManager.getInstance(this); // DB Open
 
         btnCapture = (Button) findViewById(R.id.capture);
         btnDelete = (Button) findViewById(R.id.delete);
@@ -113,11 +118,7 @@ public class ShowActivity extends AppCompatActivity {
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dbManager.delete(id);
-                // 리스트 갱신을 위해 BankActivity 다시 실행
-                Intent bankActivityIntent = new Intent(getApplicationContext(), BankActivity.class);
-                bankActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(bankActivityIntent);
+                showDeleteDialog();
             }
         });
 
@@ -136,6 +137,7 @@ public class ShowActivity extends AppCompatActivity {
                 dbManager.update(id, Integer.valueOf(date), Integer.valueOf(time), cont);
 
                 editContent.clearFocus();
+                Snackbar.make(findViewById(R.id.layout_show), "수정 완료", Snackbar.LENGTH_SHORT).show();
             }
         });
 
@@ -231,6 +233,50 @@ public class ShowActivity extends AppCompatActivity {
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH : mm");
         btnTime.setText(timeFormat.format(t));
         //btnTime.setText(String.format("%d : %d", hour, minute));
+    }
+
+    // 삭제 시 다이얼로그
+    void showDeleteDialog() {
+        LayoutInflater inflater = getLayoutInflater();
+        final View customDialogView = inflater.inflate(R.layout.dialog_custom, null);
+
+        TextView customDialogTitle = (TextView) customDialogView.findViewById(R.id.dialog_custom_title_textview);
+        TextView customDialogGuide = (TextView) customDialogView.findViewById(R.id.dialog_custom_guide_textview);
+        Button customDialogOkButton = (Button) customDialogView.findViewById(R.id.dialog_custom_ok_button);
+        Button customDialogCancelButton = (Button) customDialogView.findViewById(R.id.dialog_custom_cancel_button);
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog customDialog = builder.create();
+        customDialog.setCanceledOnTouchOutside(false);
+
+        customDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        customDialog.setView(customDialogView);
+        customDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT)); // 다이얼로그 배경 투명하게 만들기
+
+        customDialogTitle.setText("행복을 삭제하시겠습니까?");
+        customDialogGuide.setText("삭제한 행복은 복구할 수 없습니다. 삭제하시겠습니까?");
+
+        customDialogOkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dbManager.delete(id);
+                // 리스트 갱신을 위해 BankActivity 다시 실행
+                Intent bankActivityIntent = new Intent(getApplicationContext(), BankActivity.class);
+                bankActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(bankActivityIntent);
+                customDialog.dismiss();
+                Snackbar.make(findViewById(R.id.layout_show), "삭제 완료", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+
+        customDialogCancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                customDialog.dismiss();
+            }
+        });
+
+        customDialog.show();
     }
 
     // 스크린 캡처

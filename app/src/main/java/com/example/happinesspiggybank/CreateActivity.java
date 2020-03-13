@@ -5,13 +5,18 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -58,7 +63,7 @@ public class CreateActivity extends AppCompatActivity {
         btnCan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                show();
+                showCancelDialog();
             }
         } );
 
@@ -74,7 +79,6 @@ public class CreateActivity extends AppCompatActivity {
                 dbManager.insert(addRowValue);
 
                 Snackbar.make(view, "행복을 저장했습니다.", Snackbar.LENGTH_SHORT).show();
-                //Toast.makeText(getApplicationContext(), "행복을 저장했습니다.", Toast.LENGTH_SHORT).show();
                 CreateActivity.super.onBackPressed();
             }
         });
@@ -139,7 +143,7 @@ public class CreateActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        show();
+        showCancelDialog();
     }
 
     public void backPressed() {
@@ -147,23 +151,43 @@ public class CreateActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    void show() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("행복 기록을 취소하겠습니까?");
-        builder.setMessage("이 행복은 저장되지 않습니다. 뒤로 가시겠습니까?");
-        builder.setPositiveButton("예",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        backPressed();
-                    }
-                });
-        builder.setNegativeButton("아니오",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+    // 취소 시 다이얼로그
+    void showCancelDialog() {
+        LayoutInflater inflater = getLayoutInflater();
+        final View customDialogView = inflater.inflate(R.layout.dialog_custom, null);
 
-                    }
-                });
-        builder.show();
+        TextView customDialogTitle = (TextView) customDialogView.findViewById(R.id.dialog_custom_title_textview);
+        TextView customDialogGuide = (TextView) customDialogView.findViewById(R.id.dialog_custom_guide_textview);
+        Button customDialogOkButton = (Button) customDialogView.findViewById(R.id.dialog_custom_ok_button);
+        Button customDialogCancelButton = (Button) customDialogView.findViewById(R.id.dialog_custom_cancel_button);
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog customDialog = builder.create();
+        customDialog.setCanceledOnTouchOutside(false);
+
+        customDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        customDialog.setView(customDialogView);
+        customDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT)); // 다이얼로그 배경 투명하게 만들기
+
+        customDialogTitle.setText("행복 기록을 취소하겠습니까?");
+        customDialogGuide.setText("이 행복은 저장되지 않습니다. 뒤로 가시겠습니까?");
+
+        customDialogOkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                customDialog.dismiss();
+                finish();
+            }
+        });
+
+        customDialogCancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                customDialog.dismiss();
+            }
+        });
+
+        customDialog.show();
     }
 
 
