@@ -31,9 +31,10 @@
             android:parentActivityName=".MainActivity" />
         <activity android:name=".ShowActivity"
             android:label="저금통-행복"
-            android:parentActivityName=".BankActivity" />
+            android:parentActivityName=".BankActivity"
+            android:windowSoftInputMode="stateUnchanged"/>
         <activity android:name=".RandomShowActivity"
-            android:label="저금통-행복"
+            android:label="저금통-랜덤재생"
             android:parentActivityName=".BankActivity" />
     </application>
 

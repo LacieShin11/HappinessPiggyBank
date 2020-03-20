@@ -70,16 +70,21 @@ public class CreateActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ContentValues addRowValue = new ContentValues();
+                if(editContent.getText().toString().trim().getBytes().length <= 0 ) {
+                    Snackbar.make(view, "행복을 적어주세요.", Snackbar.LENGTH_SHORT).show();
+                }
+                else {
+                    ContentValues addRowValue = new ContentValues();
 
-                addRowValue.put("date", Integer.valueOf(btnDate.getText().toString().replace(". ", "")));
-                addRowValue.put("time", Integer.valueOf(btnTime.getText().toString().replace(" : ", "")));
-                addRowValue.put("content", editContent.getText().toString());
+                    addRowValue.put("date", Integer.valueOf(btnDate.getText().toString().replace(". ", "")));
+                    addRowValue.put("time", Integer.valueOf(btnTime.getText().toString().replace(" : ", "")));
+                    addRowValue.put("content", editContent.getText().toString());
 
-                dbManager.insert(addRowValue);
+                    dbManager.insert(addRowValue);
 
-                Snackbar.make(view, "행복을 저장했습니다.", Snackbar.LENGTH_SHORT).show();
-                CreateActivity.super.onBackPressed();
+                    Snackbar.make(view, "행복을 저장했습니다.", Snackbar.LENGTH_SHORT).show();
+                    CreateActivity.super.onBackPressed();
+                }
             }
         });
     }

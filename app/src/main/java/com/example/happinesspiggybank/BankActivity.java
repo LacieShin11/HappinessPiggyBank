@@ -97,7 +97,7 @@ public class BankActivity extends AppCompatActivity {
 
         String[] columns = new String[] {"_id", "date", "time", "content"};
 
-        Cursor cursor = dbManager.query(columns, null, null, null, null, "date, time");
+        Cursor cursor = dbManager.query(columns, null, null, null, null, "date DESC, time DESC");
 
         if(cursor != null) {
             while (cursor.moveToNext()) {

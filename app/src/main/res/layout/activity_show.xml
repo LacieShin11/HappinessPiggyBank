@@ -47,7 +47,11 @@
         android:layout_below="@+id/dashLine"
         android:layout_marginTop="7dp"
         android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp" />
+        android:layout_marginRight="20dp"
+        android:inputType="textImeMultiLine"
+        android:lines="30"
+        android:scrollbars="vertical"
+        android:cursorVisible="false"/>
 
     <Button
         android:id="@+id/help2"

@@ -72,7 +72,7 @@ public class HappyDbManager {
     // DB 상의 행복 id 데이터를 다 가져와서 배열로 return
     // 행복 삭제 이벤트 시 listview 상의 id와 DB 상의 id가 달라지기 때문에 사용
     public int[] getID() {
-        Cursor c = mydatabase.rawQuery("Select * from " + TABLE_Happy + " order by date, time;", null);
+        Cursor c = mydatabase.rawQuery("Select * from " + TABLE_Happy + " order by date DESC, time DESC;", null);
         int[] IDArray = new int[c.getCount()];
         int i = 0;
 

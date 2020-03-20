@@ -12,6 +12,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -47,6 +50,7 @@ public class ShowActivity extends AppCompatActivity {
     String date, time, cont;
     private HappyDbManager dbManager;
     private final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0;
+    boolean contentChanged;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,30 +72,58 @@ public class ShowActivity extends AppCompatActivity {
         captureLayout = (RelativeLayout) findViewById(R.id.layout_show);
         captureLayout.setBackgroundColor(Color.WHITE); // 배경색이 없으므로 캡처 화면에서의 배경색 지정
 
-        //커서 안 보임
-        editContent.setInputType(EditorInfo.TYPE_NULL);
+        editContent.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        editContent.setSingleLine(false);
 
-        //입력 시 키보드 사용가능
+        contentChanged = false;
+
+
+        //입력 시 키보드, 커서 보임
         editContent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((EditText) view).setInputType(EditorInfo.TYPE_CLASS_TEXT);
+                editContent.setCursorVisible(true);
+                //작동 안 되면 addTextChangedListener를 지우고 아래 코드 이용바람!!!!!
+                //contentChanged = true;
+            }
+        });
+        //입력 완료 후 다시 안 보임
+        editContent.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus) {
+                    editContent.setCursorVisible(false);
+                }
             }
         });
 
-        //입력 완료 후 다시 안 보임
-        editContent.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        editContent.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                textView.setInputType(EditorInfo.TYPE_NULL);
-                return true;
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+                //입력하기 전
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                //입력되는 텍스트에 변화가 있을 때
+                contentChanged = true;
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                //입력이 끝났을 때
             }
         });
+
 
         // 이전 화면으로 나가기
         btnCan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(contentChanged) {
+                    // 커스텀다이얼로그 부탁합니다!!!! 바뀌었을 때 이대로 나가시면 수정된 행복이 저장되지 않습니다. 그래도 나가시겠습니까? 같은!!!!!
+                }
+
                 Intent bankActivityIntent = new Intent(getApplicationContext(), BankActivity.class);
                 bankActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(bankActivityIntent);
@@ -138,6 +170,8 @@ public class ShowActivity extends AppCompatActivity {
 
                 editContent.clearFocus();
                 Snackbar.make(findViewById(R.id.layout_show), "수정 완료", Snackbar.LENGTH_SHORT).show();
+
+                contentChanged = false;
             }
         });
 
@@ -172,6 +206,10 @@ public class ShowActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() { // 뒤로가기 눌렀을 때
+        if(contentChanged) {
+            // 커스텀다이얼로그 부탁합니다!!!! 바뀌었을 때 이대로 나가시면 수정된 행복이 저장되지 않습니다. 그래도 나가시겠습니까? 같은!!!!!
+        }
+
         // 리스트 갱신을 위해 BankActivity 다시 실행
         Intent bankActivityIntent = new Intent(getApplicationContext(), BankActivity.class);
         bankActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
