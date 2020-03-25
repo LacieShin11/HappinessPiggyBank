@@ -18,6 +18,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -50,7 +51,7 @@ public class ShowActivity extends AppCompatActivity {
     String date, time, cont;
     private HappyDbManager dbManager;
     private final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0;
-    boolean contentChanged;
+    boolean contentChanged, dateChanged, timeChanged;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,17 +77,20 @@ public class ShowActivity extends AppCompatActivity {
         editContent.setSingleLine(false);
 
         contentChanged = false;
+        dateChanged = false;
+        timeChanged = false;
 
-
-        //입력 시 키보드, 커서 보임
-        editContent.setOnClickListener(new View.OnClickListener() {
+        // 입력 시 키보드, 커서 보임
+        editContent.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
                 editContent.setCursorVisible(true);
-                //작동 안 되면 addTextChangedListener를 지우고 아래 코드 이용바람!!!!!
-                //contentChanged = true;
+                contentChanged = true;
+
+                return false;
             }
         });
+
         //입력 완료 후 다시 안 보임
         editContent.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -97,36 +101,17 @@ public class ShowActivity extends AppCompatActivity {
             }
         });
 
-        editContent.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-                //입력하기 전
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                //입력되는 텍스트에 변화가 있을 때
-                contentChanged = true;
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                //입력이 끝났을 때
-            }
-        });
-
-
         // 이전 화면으로 나가기
         btnCan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(contentChanged) {
-                    // 커스텀다이얼로그 부탁합니다!!!! 바뀌었을 때 이대로 나가시면 수정된 행복이 저장되지 않습니다. 그래도 나가시겠습니까? 같은!!!!!
+                if(contentChanged||dateChanged||timeChanged) {
+                    showCancelEditDialog();
+                } else {
+                    Intent bankActivityIntent = new Intent(getApplicationContext(), BankActivity.class);
+                    bankActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(bankActivityIntent);
                 }
-
-                Intent bankActivityIntent = new Intent(getApplicationContext(), BankActivity.class);
-                bankActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(bankActivityIntent);
             }
         });
 
@@ -172,6 +157,8 @@ public class ShowActivity extends AppCompatActivity {
                 Snackbar.make(findViewById(R.id.layout_show), "수정 완료", Snackbar.LENGTH_SHORT).show();
 
                 contentChanged = false;
+                dateChanged = false;
+                timeChanged = false;
             }
         });
 
@@ -206,16 +193,16 @@ public class ShowActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() { // 뒤로가기 눌렀을 때
-        if(contentChanged) {
-            // 커스텀다이얼로그 부탁합니다!!!! 바뀌었을 때 이대로 나가시면 수정된 행복이 저장되지 않습니다. 그래도 나가시겠습니까? 같은!!!!!
+        if(contentChanged||dateChanged||timeChanged) {
+            showCancelEditDialog();
+        } else {
+            // 리스트 갱신을 위해 BankActivity 다시 실행
+            Intent bankActivityIntent = new Intent(getApplicationContext(), BankActivity.class);
+            bankActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(bankActivityIntent);
+
+            super.onBackPressed();
         }
-
-        // 리스트 갱신을 위해 BankActivity 다시 실행
-        Intent bankActivityIntent = new Intent(getApplicationContext(), BankActivity.class);
-        bankActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(bankActivityIntent);
-
-        super.onBackPressed();
     }
 
     public void mOnClick(View v) {
@@ -262,7 +249,7 @@ public class ShowActivity extends AppCompatActivity {
         java.sql.Date d = java.sql.Date.valueOf(date);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy. MM. dd");
         btnDate.setText(dateFormat.format(d));
-        //btnDate.setText(String.format("%d. %d. %d", year, month+1, day));
+        dateChanged = true;
     }
 
     void UpdateTime() {
@@ -270,31 +257,31 @@ public class ShowActivity extends AppCompatActivity {
         Time t = Time.valueOf(time);
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH : mm");
         btnTime.setText(timeFormat.format(t));
-        //btnTime.setText(String.format("%d : %d", hour, minute));
+        timeChanged = true;
     }
 
     // 삭제 시 다이얼로그
     void showDeleteDialog() {
-        LayoutInflater inflater = getLayoutInflater();
-        final View customDialogView = inflater.inflate(R.layout.dialog_custom, null);
+        LayoutInflater deleteDialogInflater = getLayoutInflater();
+        final View customDeleteDialogView = deleteDialogInflater.inflate(R.layout.dialog_custom, null);
 
-        TextView customDialogTitle = (TextView) customDialogView.findViewById(R.id.dialog_custom_title_textview);
-        TextView customDialogGuide = (TextView) customDialogView.findViewById(R.id.dialog_custom_guide_textview);
-        Button customDialogOkButton = (Button) customDialogView.findViewById(R.id.dialog_custom_ok_button);
-        Button customDialogCancelButton = (Button) customDialogView.findViewById(R.id.dialog_custom_cancel_button);
+        TextView customDeleteDialogTitle = (TextView) customDeleteDialogView.findViewById(R.id.dialog_custom_title_textview);
+        TextView customDeleteDialogGuide = (TextView) customDeleteDialogView.findViewById(R.id.dialog_custom_guide_textview);
+        Button customDeleteDialogOkButton = (Button) customDeleteDialogView.findViewById(R.id.dialog_custom_ok_button);
+        Button customDeleteDialogCancelButton = (Button) customDeleteDialogView.findViewById(R.id.dialog_custom_cancel_button);
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        final AlertDialog customDialog = builder.create();
-        customDialog.setCanceledOnTouchOutside(false);
+        final AlertDialog customDeleteDialog = builder.create();
+        customDeleteDialog.setCanceledOnTouchOutside(false);
 
-        customDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        customDialog.setView(customDialogView);
-        customDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT)); // 다이얼로그 배경 투명하게 만들기
+        customDeleteDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        customDeleteDialog.setView(customDeleteDialogView);
+        customDeleteDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT)); // 다이얼로그 배경 투명하게 만들기
 
-        customDialogTitle.setText("행복을 삭제하시겠습니까?");
-        customDialogGuide.setText("삭제한 행복은 복구할 수 없습니다. 삭제하시겠습니까?");
+        customDeleteDialogTitle.setText("행복을 삭제하시겠습니까?");
+        customDeleteDialogGuide.setText("삭제한 행복은 복구할 수 없습니다. 삭제하시겠습니까?");
 
-        customDialogOkButton.setOnClickListener(new View.OnClickListener() {
+        customDeleteDialogOkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dbManager.delete(id);
@@ -302,19 +289,58 @@ public class ShowActivity extends AppCompatActivity {
                 Intent bankActivityIntent = new Intent(getApplicationContext(), BankActivity.class);
                 bankActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(bankActivityIntent);
-                customDialog.dismiss();
+                customDeleteDialog.dismiss();
                 Snackbar.make(findViewById(R.id.layout_show), "삭제 완료", Snackbar.LENGTH_SHORT).show();
             }
         });
 
-        customDialogCancelButton.setOnClickListener(new View.OnClickListener() {
+        customDeleteDialogCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                customDialog.dismiss();
+                customDeleteDialog.dismiss();
             }
         });
 
-        customDialog.show();
+        customDeleteDialog.show();
+    }
+
+    // 수정 내용 저장하지 않고 화면 벗어날 시 다이얼로그
+    void showCancelEditDialog() {
+        LayoutInflater cancelEditInflater = getLayoutInflater();
+        final View customCancelEditDialogView = cancelEditInflater.inflate(R.layout.dialog_custom, null);
+
+        TextView customCancelEditDialogTitle = (TextView) customCancelEditDialogView.findViewById(R.id.dialog_custom_title_textview);
+        TextView customCancelEditDialogGuide = (TextView) customCancelEditDialogView.findViewById(R.id.dialog_custom_guide_textview);
+        Button customCancelEditDialogOkButton = (Button) customCancelEditDialogView.findViewById(R.id.dialog_custom_ok_button);
+        Button customCancelEditDialogCancelButton = (Button) customCancelEditDialogView.findViewById(R.id.dialog_custom_cancel_button);
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog customCancelEditDialog = builder.create();
+        customCancelEditDialog.setCanceledOnTouchOutside(false);
+
+        customCancelEditDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        customCancelEditDialog.setView(customCancelEditDialogView);
+        customCancelEditDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT)); // 다이얼로그 배경 투명하게 만들기
+
+        customCancelEditDialogTitle.setText("뒤로 나가시겠습니까?");
+        customCancelEditDialogGuide.setText("수정된 내용이 저장되지 않았습니다.\n뒤로 나가시겠습니까?");
+
+        customCancelEditDialogOkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                customCancelEditDialog.dismiss();
+                finish();
+            }
+        });
+
+        customCancelEditDialogCancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                customCancelEditDialog.dismiss();
+            }
+        });
+
+        customCancelEditDialog.show();
     }
 
     // 스크린 캡처

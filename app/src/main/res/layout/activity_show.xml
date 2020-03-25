@@ -50,8 +50,7 @@
         android:layout_marginRight="20dp"
         android:inputType="textImeMultiLine"
         android:lines="30"
-        android:scrollbars="vertical"
-        android:cursorVisible="false"/>
+        android:scrollbars="vertical" />
 
     <Button
         android:id="@+id/help2"
